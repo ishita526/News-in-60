@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewsIn60 | The NewsIn60 Chronicle</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        newspaper: '#fcfbf7',
+                        'newspaper-dark': '#12181f',
+                        'newspaper-gray': '#e6e4dc',
+                        'newspaper-accent': '#a82424',
+                        'newspaper-ink': '#1a1918'
+                    },
+                    fontFamily: {
+                        masthead: ['UnifrakturMaguntia', 'Playfair Display', 'serif'],
+                        headline: ['Playfair Display', 'Georgia', 'serif'],
+                        body: ['Newsreader', 'Georgia', 'serif'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #e2dfd5;
+            color: #1a1918;
+            font-family: 'Newsreader', Georgia, serif;
+        }
+
+        .drop-cap::first-letter {
+            font-family: 'UnifrakturMaguntia', 'Playfair Display', serif;
+            float: left;
+            font-size: 4.2rem;
+            line-height: 0.8;
+            padding-top: 4px;
+            padding-right: 8px;
+            padding-left: 2px;
+            color: #1a1918;
+            font-weight: bold;
+        }
+
+        .newspaper-border-thick-thin {
+            border-top: 3px solid #1a1918;
+            border-bottom: 1px solid #1a1918;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f0ea;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #bbb8ac;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #88857a;
+        }
+
+        .newspaper-paper {
+            background-color: #fcfbf7;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- Top Wire Header -->
+    <header class="bg-[#12181f] text-white text-xs font-sans tracking-wider uppercase border-b border-gray-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 h-11 flex items-center justify-between">
+            <div class="flex items-center space-x-6">
+                <span class="font-bold text-red-500 tracking-widest flex items-center gap-1.5">
+                    <span class="inline-block w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
+                    THE NEWSIN60 CHRONICLE WIRE
+                </span>
+                <span class="hidden md:inline text-gray-400 border-l border-gray-700 pl-4" id="current-date-header">
+                    EDITION: TODAY
+                </span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button onclick="toggleHistoryDrawer()" class="text-gray-300 hover:text-white flex items-center gap-1.5 font-medium transition">
+                    <i class="fa-solid fa-clock-rotate-left text-amber-400"></i> Archives (<span id="archive-count">0</span>)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto w-full my-4 px-2 sm:px-4 flex-grow">
+        <div class="newspaper-paper p-4 sm:p-8 rounded-sm">
+            
+            <!-- BroadSheet Masthead Header -->
+            <div class="text-center border-b-2 border-newspaper-ink pb-4 mb-6">
+                <div class="flex justify-between items-center text-xs font-sans text-gray-600 mb-2 border-b border-gray-300 pb-1 px-2 uppercase tracking-widest">
+                    <span>Vol. CXXIV No. 42,891</span>
+                    <span class="font-bold text-newspaper-ink hidden sm:inline">"THE TRUTH IN 60 SECONDS OR LESS"</span>
+                    <span id="reading-time-est"><i class="fa-regular fa-clock mr-1"></i>Ready for Article Input</span>
+                </div>
+
+                <!-- Gothic Title Masthead Font -->
+                <h1 class="font-masthead text-5xl sm:text-7xl md:text-8xl font-black text-newspaper-ink tracking-tight my-1 select-none leading-none">
+                    The NewsIn60 Chronicle
+                </h1>
+
+                <!-- Category Sub-Nav Bar -->
+                <div class="newspaper-border-thick-thin py-2 mt-4 flex flex-wrap justify-center items-center gap-2 sm:gap-6 text-xs sm:text-sm font-sans font-bold text-gray-800 tracking-wider">
+                    <span onclick="setCategory('GLOBAL AFFAIRS')" class="hover:text-newspaper-accent cursor-pointer transition uppercase">GLOBAL AFFAIRS</span>
+                    <span class="text-gray-300">|</span>
+                    <span onclick="setCategory('FINANCIAL MARKETS')" class="hover:text-newspaper-accent cursor-pointer transition uppercase">FINANCIAL MARKETS</span>
+                    <span class="text-gray-300">|</span>
+                    <span onclick="setCategory('TECH ADVANCES')" class="hover:text-newspaper-accent cursor-pointer transition uppercase text-newspaper-accent">TECH ADVANCES</span>
+                    <span class="text-gray-300">|</span>
+                    <span onclick="setCategory('POLITICAL SHIFTS')" class="hover:text-newspaper-accent cursor-pointer transition uppercase">POLITICAL SHIFTS</span>
+                    <span class="text-gray-300">|</span>
+                    <span onclick="setCategory('AI RESEARCH')" class="hover:text-newspaper-accent cursor-pointer transition uppercase">AI RESEARCH</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- ========================================================= -->
+                <!-- LEFT COLUMN: INPUT DESK (Text & Photo Upload + Settings) -->
+                <!-- ========================================================= -->
+                <section class="lg:col-span-5 bg-stone-100 p-5 rounded border border-stone-300 shadow-inner">
+                    <div class="border-b border-stone-300 pb-3 mb-4 flex justify-between items-center">
+                        <h2 class="font-headline font-bold text-xl text-newspaper-ink flex items-center gap-2">
+                            <i class="fa-solid fa-feather-pointed text-newspaper-accent"></i> Input Desk
+                        </h2>
+                        <button onclick="loadNovatechSample()" class="text-xs bg-amber-100 hover:bg-amber-200 text-amber-900 px-2.5 py-1 rounded font-sans font-semibold border border-amber-300 transition flex items-center gap-1">
+                            <i class="fa-solid fa-file-import text-amber-700"></i> Auto-Fill Sample
+                        </button>
+                    </div>
+
+                    <!-- Input Mode Switcher Tabs -->
+                    <div class="flex border-b border-stone-300 mb-4 bg-stone-200 p-1 rounded font-sans text-xs font-bold">
+                        <button id="tab-btn-text" onclick="switchInputTab('text')" class="flex-1 py-1.5 rounded bg-white text-newspaper-ink shadow-sm transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-align-left"></i> Paste Text
+                        </button>
+                        <button id="tab-btn-photo" onclick="switchInputTab('photo')" class="flex-1 py-1.5 rounded text-stone-600 hover:text-stone-900 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-camera"></i> Upload Image / Photo
+                        </button>
+                    </div>
+
+                    <!-- TEXT INPUT TAB AREA -->
+                    <div id="input-container-text" class="space-y-3">
+                        <label class="block text-xs font-sans font-bold uppercase tracking-wider text-gray-700">
+                            Paste Article / News Text
+                        </label>
+                        <textarea id="raw-text-input" rows="10" class="w-full p-3 border border-stone-300 rounded font-sans text-sm focus:outline-none focus:ring-2 focus:ring-newspaper-accent bg-white text-stone-800 custom-scrollbar" placeholder="Paste full news story, press release, or long article text here..."></textarea>
+                    </div>
+
+                    <!-- PHOTO UPLOAD TAB AREA -->
+                    <div id="input-container-photo" class="hidden space-y-3">
+                        <label class="block text-xs font-sans font-bold uppercase tracking-wider text-gray-700">
+                            Upload News Clipping Photo
+                        </label>
+                        <div id="dropzone" onclick="document.getElementById('photo-file-input').click()" class="relative border-2 border-dashed border-stone-400 hover:border-newspaper-accent rounded-lg p-6 text-center cursor-pointer bg-white transition hover:bg-stone-50 group">
+                            <input type="file" id="photo-file-input" accept="image/jpeg,image/png,image/webp,image/jpg" class="hidden" onchange="handlePhotoUpload(event)">
+                            <div id="dropzone-prompt" class="space-y-2">
+                                <div class="w-12 h-12 rounded-full bg-red-50 text-newspaper-accent flex items-center justify-center mx-auto group-hover:scale-110 transition">
+                                    <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
+                                </div>
+                                <p class="text-sm font-sans font-medium text-stone-700">Click or drag & drop newspaper photo</p>
+                                <p class="text-xs font-sans text-stone-500">Supports PNG, JPG, WEBP (&le; 10 MB)</p>
+                            </div>
+                            <div id="dropzone-preview" class="hidden relative">
+                                <img id="preview-img" src="" alt="News Image" class="max-h-48 mx-auto rounded border border-stone-300 object-contain">
+                                <p id="preview-filename" class="text-xs font-sans text-stone-600 mt-2 font-medium truncate max-w-xs mx-auto"></p>
+                                <button onclick="event.stopPropagation(); removePhoto();" class="absolute -top-2 -right-2 bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shadow hover:bg-red-700" title="Remove photo">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inline Notification / Error Display -->
+                    <div id="input-error-banner" class="hidden mt-3 p-3 bg-red-50 border-l-4 border-newspaper-accent rounded font-sans text-xs text-red-900 flex items-start justify-between gap-2">
+                        <div class="flex items-start gap-2">
+                            <i class="fa-solid fa-triangle-exclamation text-newspaper-accent mt-0.5"></i>
+                            <span id="input-error-text">An error occurred.</span>
+                        </div>
+                        <button onclick="hideError()" class="text-red-700 hover:text-red-900 font-bold">&times;</button>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-stone-300 space-y-3 font-sans">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-700 mb-1" title="Backend targets 90–110 words">
+                                    Summary Target <span class="text-stone-400 font-normal">(Model)</span>
+                                </label>
+                                <select id="select-duration" class="w-full text-xs p-2 border border-stone-300 rounded bg-stone-100 text-stone-700 font-medium cursor-not-allowed" disabled title="Gemma model generates standard 90–110 word summaries">
+                                    <option value="60s" selected>⚡ ~60s (~100 Words)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-700 mb-1" title="Backend uses simple, friendly English">
+                                    Editorial Tone <span class="text-stone-400 font-normal">(Model)</span>
+                                </label>
+                                <select id="select-tone" class="w-full text-xs p-2 border border-stone-300 rounded bg-stone-100 text-stone-700 font-medium cursor-not-allowed" disabled title="Gemma model generates plain-English, easy-to-read news summaries">
+                                    <option value="simplified" selected>💡 Plain English (ELI5)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-700 mb-1">
+                                Desk Category <span class="text-stone-400 font-normal">(Display Label)</span>
+                            </label>
+                            <select id="select-category" class="w-full text-xs p-2 border border-stone-300 rounded bg-white text-stone-800 font-medium focus:ring-1 focus:ring-newspaper-accent">
+                                <option value="TECH ADVANCES">TECH ADVANCES</option>
+                                <option value="GLOBAL AFFAIRS">GLOBAL AFFAIRS</option>
+                                <option value="FINANCIAL MARKETS">FINANCIAL MARKETS</option>
+                                <option value="POLITICAL SHIFTS">POLITICAL SHIFTS</option>
+                                <option value="AI RESEARCH">AI RESEARCH</option>
+                            </select>
+                        </div>
+
+                        <!-- GENERATE SUMMARY BUTTON -->
+                        <button id="btn-summarize" onclick="processSummarization()" class="w-full mt-2 bg-newspaper-accent hover:bg-red-800 text-white font-sans font-bold py-3 px-4 rounded shadow hover:shadow-md transition flex items-center justify-center gap-2 text-sm tracking-wide">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> GENERATE SUMMARY IN 60S
+                        </button>
+                    </div>
+
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- RIGHT COLUMN: SUMMARY OUTPUT DISPLAY (Newspaper Layout) -->
+                <!-- ========================================================= -->
+                <section id="summary-display-column" class="lg:col-span-7 lg:pl-4 min-h-[550px]">
+                    
+                    <!-- INITIAL PLACEHOLDER (Prompting user to submit text/photo on the left) -->
+                    <div id="summary-empty-state" class="min-h-[500px] border-2 border-dashed border-stone-300 rounded-lg flex flex-col items-center justify-center p-8 bg-stone-50/50 text-center">
+                        <div class="w-16 h-16 rounded-full bg-stone-200 text-stone-500 flex items-center justify-center mb-4 text-2xl">
+                            <i class="fa-solid fa-newspaper"></i>
+                        </div>
+                        <h3 class="font-headline font-bold text-xl text-stone-800 mb-2">Awaiting Article Submission</h3>
+                        <p class="font-sans text-sm text-stone-600 max-w-md leading-relaxed mb-4">
+                            Paste a long news story or upload an article image using the Input Desk on the <strong>left</strong>. NewsIn60 will transform it into an executive broadsheet story via Gemma AI.
+                        </p>
+                        <button onclick="loadNovatechSample()" class="text-xs bg-newspaper-accent text-white px-3.5 py-2 rounded font-sans font-bold shadow hover:bg-red-800 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-bolt"></i> Auto-Fill Sample AI Article
+                        </button>
+                    </div>
+
+                    <!-- ERROR STATE IN OUTPUT DESK -->
+                    <div id="summary-error-state" class="hidden min-h-[400px] border-2 border-dashed border-red-300 rounded-lg flex flex-col items-center justify-center p-8 bg-red-50/50 text-center">
+                        <div class="w-16 h-16 rounded-full bg-red-100 text-newspaper-accent flex items-center justify-center mb-4 text-2xl">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                        </div>
+                        <h3 class="font-headline font-bold text-xl text-red-900 mb-2">Dispatch Generation Failed</h3>
+                        <p id="summary-error-message" class="font-sans text-sm text-red-700 max-w-md leading-relaxed mb-4">
+                            Unable to synthesize article summary.
+                        </p>
+                        <button onclick="resetOutputToEmpty()" class="text-xs bg-stone-700 text-white px-3.5 py-2 rounded font-sans font-bold shadow hover:bg-stone-900 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-rotate-left"></i> Return to Input Desk
+                        </button>
+                    </div>
+
+                    <!-- GENERATED SUMMARY CONTENT CONTAINER (Dynamic Output) -->
+                    <div id="summary-content-container" class="hidden border-l-0 lg:border-l border-stone-200 lg:pl-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span id="summary-category-badge" class="bg-newspaper-accent text-white font-sans text-xs font-bold px-2.5 py-1 uppercase tracking-wider">
+                                TECH ADVANCES
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <button onclick="readAloudSummary()" id="btn-read-aloud" class="text-xs font-sans bg-stone-200 hover:bg-stone-300 text-stone-800 px-2.5 py-1 rounded flex items-center gap-1 font-medium transition">
+                                    <i class="fa-solid fa-volume-high text-newspaper-accent"></i> Listen
+                                </button>
+                                <button onclick="copySummaryText()" id="btn-copy" class="text-xs font-sans bg-stone-200 hover:bg-stone-300 text-stone-800 px-2.5 py-1 rounded flex items-center gap-1 font-medium transition" title="Copy text">
+                                    <i class="fa-regular fa-copy"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Article Headline -->
+                        <h2 id="summary-headline" class="font-headline text-2xl sm:text-3xl md:text-4xl font-black text-newspaper-ink leading-tight mb-3">
+                            The NewsIn60 Executive Dispatch
+                        </h2>
+
+                        <!-- Article Byline & Metadata -->
+                        <div class="border-y border-gray-300 py-1.5 my-3 flex flex-wrap justify-between items-center text-xs font-sans text-gray-600 gap-2">
+                            <span><strong class="text-newspaper-ink">By AI Wire Desk (Gemma 4 31B)</strong> &bull; Executive Synthesis</span>
+                            <div class="flex items-center gap-3">
+                                <span id="summary-word-badge" class="font-bold text-newspaper-accent">
+                                    <i class="fa-solid fa-file-lines mr-1"></i><span id="summary-word-count">0</span> Words
+                                </span>
+                                <span id="summary-timestamp">Just Now</span>
+                            </div>
+                        </div>
+
+                        <!-- Main Article Body -->
+                        <div id="summary-article-body" class="text-gray-900 text-base sm:text-lg leading-relaxed text-justify mb-6">
+                            <!-- Dynamic text injected via JS -->
+                        </div>
+
+                        <!-- Secondary container (hidden to prevent fabricating ungrounded bullet points) -->
+                        <div id="summary-bullet-points-container" class="hidden bg-amber-50/70 border border-amber-200/80 p-4 rounded mb-6">
+                            <h3 class="font-sans font-bold text-xs uppercase tracking-wider text-newspaper-accent mb-2.5 flex items-center gap-1.5">
+                                <i class="fa-solid fa-bolt"></i> 60-Second Key Takeaways
+                            </h3>
+                            <ul id="summary-bullet-points" class="space-y-2 font-sans text-sm text-stone-800"></ul>
+                        </div>
+
+                        <!-- Topic tags (hidden to prevent fabricating ungrounded tags) -->
+                        <div id="summary-entities-container" class="hidden">
+                            <span class="text-xs font-sans uppercase font-bold text-gray-500 mr-2">Topics & Tags:</span>
+                            <div id="summary-entities" class="inline-flex flex-wrap gap-1.5 mt-1"></div>
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+
+            <div class="newspaper-border-thick-thin mt-8 pt-3 text-center text-xs font-sans text-gray-600 flex flex-col sm:flex-row justify-between items-center gap-2">
+                <span>&copy; 2026 NewsIn60 Automated Broadsheet Engine. All Rights Reserved.</span>
+                <span class="italic font-headline text-stone-700">"Fast, Accurate, Broadsheet Journalism"</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- Slide-over Archives Drawer -->
+    <!-- Backdrop overlay: closes drawer on outside click -->
+    <div id="history-drawer-backdrop" class="hidden fixed inset-0 bg-black/40 z-40" onclick="toggleHistoryDrawer()"></div>
+    <div id="history-drawer" class="fixed inset-y-0 right-0 w-80 bg-stone-900 text-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out font-sans flex flex-col">
+        <div class="p-4 bg-newspaper-dark border-b border-stone-800 flex justify-between items-center">
+            <h3 class="font-bold text-sm tracking-wider uppercase flex items-center gap-2">
+                <i class="fa-solid fa-box-archive text-red-500"></i> Summary Archives
+            </h3>
+            <button onclick="toggleHistoryDrawer()" class="text-stone-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+        <div id="archive-list" class="p-4 overflow-y-auto flex-grow space-y-3 custom-scrollbar">
+            <div class="text-xs text-stone-400 text-center py-8">
+                No saved summaries in archives.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8000/api/summarize";
+
+        // Sample NovaTech Dynamics AI News Article for quick testing
+        const novatechArticleText = `SAN FRANCISCO — Silicon Valley is witnessing its largest structural transformation in a decade as major technology enterprises transition from generative text assistants to autonomous, multi-step 'Agentic AI' systems. On Tuesday, NovaTech Dynamics announced the enterprise-wide rollout of its next-generation platform, 'Aether AI,' marking a decisive shift away from passive conversational tools toward goal-driven digital workforces.
+
+According to NovaTech’s press briefing, traditional large language models (LLMs) relied heavily on human prompting to generate static outputs such as text summaries, code snippets, or basic emails. In contrast, Aether AI operates on an autonomous agent framework capable of interpreting abstract high-level objectives, formulating multi-step operational plans, and executing complex tasks across fragmented software ecosystems without continuous human intervention.
+
+During a demonstration conducted at the company's San Francisco headquarters, CEO Dr. Aris Thorne illustrated how the system handles a supply chain breakdown. When prompted with a high-level directive—'Mitigate a 3-week shipping delay for microchip components originating from the East Asia hub'—Aether AI did not simply suggest a solution. Within seconds, the agent scanned global logistics databases, calculated cost trade-offs between air freight and alternative sea routes, contacted third-party suppliers via API to verify available inventory, generated revised contract drafts, and routed them to executive human managers for a single-click authorization.
+
+'We are moving past the demo phase of generative AI,' Dr. Thorne stated. 'In 2024 and 2025, the enterprise goal was to give every worker a copilot. In 2026, the strategy is building autonomous digital teams that handle end-to-end execution, reducing manual operational overhead by up to 60 percent.'
+
+The rapid advancement of agentic architecture has sparked widespread debate among industry analysts regarding workforce restructuring and system governance. While financial analysts at Global Tech Insights project that autonomous agents could unlock $1.4 trillion in economic productivity by 2028, cybersecurity experts warn of unprecedented operational risks.
+
+Dr. Elena Rostova, Chief AI Safety Researcher at the Center for Algorithmic Accountability, cautioned against giving autonomous agents unchecked access to enterprise systems. 'When an AI model transitions from outputting text to taking direct operational actions—such as executing financial transactions, modifying code bases, or updating client records—the blast radius of a system failure increases exponentially,' Rostova explained. 'If an agent misinterprets an objective or acts on corrupted data, it can propagate systemic errors across an enterprise before human oversight can intervene.'
+
+To mitigate these risks, NovaTech introduced a mandatory framework dubbed 'Human-in-the-Loop Governance' (HITLG). Under HITLG, Aether AI is constrained by strict operational boundaries: it can independently research, plan, and execute low-risk actions, but high-impact decisions—such as capital expenditures exceeding $10,000, legal commitment signatures, or core infrastructure modifications—require explicit human validation.`;
+
+        let archiveData = [];
+        let activeInputMode = 'text';
+        let selectedImageFile = null;
+        let currentDisplayedSummary = "";
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
+            document.getElementById('current-date-header').innerText = `EDITION: ${dateStr.toUpperCase()}`;
+
+            // Initialize drag and drop for photo dropzone
+            setupDropzone();
+        });
+
+        function setupDropzone() {
+            const dropzone = document.getElementById('dropzone');
+            ['dragenter', 'dragover'].forEach(name => {
+                dropzone.addEventListener(name, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.add('border-newspaper-accent', 'bg-stone-50');
+                });
+            });
+
+            ['dragleave', 'drop'].forEach(name => {
+                dropzone.addEventListener(name, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.remove('border-newspaper-accent', 'bg-stone-50');
+                });
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                const files = e.dataTransfer.files;
+                if (files && files.length > 0) {
+                    processSelectedFile(files[0]);
+                }
+            });
+        }
+
+        function setCategory(catName) {
+            document.getElementById('select-category').value = catName;
+        }
+
+        function loadNovatechSample() {
+            switchInputTab('text');
+            document.getElementById('raw-text-input').value = novatechArticleText;
+            document.getElementById('select-category').value = 'TECH ADVANCES';
+            hideError();
+        }
+
+        function switchInputTab(mode) {
+            activeInputMode = mode;
+            const btnText = document.getElementById('tab-btn-text');
+            const btnPhoto = document.getElementById('tab-btn-photo');
+            const containerText = document.getElementById('input-container-text');
+            const containerPhoto = document.getElementById('input-container-photo');
+
+            if (mode === 'text') {
+                btnText.className = "flex-1 py-1.5 rounded bg-white text-newspaper-ink shadow-sm transition flex items-center justify-center gap-2";
+                btnPhoto.className = "flex-1 py-1.5 rounded text-stone-600 hover:text-stone-900 transition flex items-center justify-center gap-2";
+                containerText.classList.remove('hidden');
+                containerPhoto.classList.add('hidden');
+            } else {
+                btnPhoto.className = "flex-1 py-1.5 rounded bg-white text-newspaper-ink shadow-sm transition flex items-center justify-center gap-2";
+                btnText.className = "flex-1 py-1.5 rounded text-stone-600 hover:text-stone-900 transition flex items-center justify-center gap-2";
+                containerPhoto.classList.remove('hidden');
+                containerText.classList.add('hidden');
+            }
+            hideError();
+        }
+
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            processSelectedFile(file);
+        }
+
+        function processSelectedFile(file) {
+            // Check file type
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            if (!validTypes.includes(file.type.toLowerCase()) && !file.name.match(/\.(jpg|jpeg|png|webp)$/i)) {
+                showError(`Unsupported image format "${file.name}". Please upload a JPG, PNG, or WEBP image.`);
+                return;
+            }
+
+            // Check file size (max 10 MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showError(`Image "${file.name}" is too large. Maximum allowed size is 10 MB.`);
+                return;
+            }
+
+            selectedImageFile = file;
+            hideError();
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview-img').src = e.target.result;
+                document.getElementById('preview-filename').innerText = file.name;
+                document.getElementById('dropzone-prompt').classList.add('hidden');
+                document.getElementById('dropzone-preview').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removePhoto() {
+            selectedImageFile = null;
+            document.getElementById('photo-file-input').value = '';
+            document.getElementById('preview-img').src = '';
+            document.getElementById('preview-filename').innerText = '';
+            document.getElementById('dropzone-prompt').classList.remove('hidden');
+            document.getElementById('dropzone-preview').classList.add('hidden');
+            hideError();
+        }
+
+        function showError(message) {
+            const banner = document.getElementById('input-error-banner');
+            document.getElementById('input-error-text').innerText = message;
+            banner.classList.remove('hidden');
+        }
+
+        function hideError() {
+            document.getElementById('input-error-banner').classList.add('hidden');
+        }
+
+        function showOutputError(message) {
+            document.getElementById('summary-empty-state').classList.add('hidden');
+            document.getElementById('summary-content-container').classList.add('hidden');
+            const errBox = document.getElementById('summary-error-state');
+            document.getElementById('summary-error-message').innerText = message;
+            errBox.classList.remove('hidden');
+        }
+
+        function resetOutputToEmpty() {
+            document.getElementById('summary-error-state').classList.add('hidden');
+            document.getElementById('summary-content-container').classList.add('hidden');
+            document.getElementById('summary-empty-state').classList.remove('hidden');
+        }
+
+        async function processSummarization() {
+            hideError();
+
+            const formData = new FormData();
+
+            if (activeInputMode === 'text') {
+                const textToSummarize = document.getElementById('raw-text-input').value.trim();
+                if (!textToSummarize) {
+                    showError("Please paste or type an article into the text input area first.");
+                    return;
+                }
+                formData.append('text', textToSummarize);
+            } else {
+                if (!selectedImageFile) {
+                    showError("Please select or drop a news image to upload first.");
+                    return;
+                }
+                formData.append('image', selectedImageFile, selectedImageFile.name);
+            }
+
+            const btn = document.getElementById('btn-summarize');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> SYNTHESIZING DISPATCH...`;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    let errMsg = `Server returned HTTP ${response.status}`;
+                    try {
+                        const errJson = await response.json();
+                        if (errJson && errJson.detail) {
+                            if (typeof errJson.detail === 'string') {
+                                errMsg = errJson.detail;
+                            } else if (errJson.detail.error) {
+                                errMsg = errJson.detail.error;
+                            }
+                        }
+                    } catch (_) {}
+                    throw new Error(errMsg);
+                }
+
+                const result = await response.json();
+
+                if (!result || typeof result.summary !== 'string') {
+                    throw new Error("Invalid response format received from backend.");
+                }
+
+                const category = document.getElementById('select-category').value;
+                const headline = activeInputMode === 'image' 
+                    ? "Dispatch: Photo Analysis & News Synthesis"
+                    : "The NewsIn60 Executive Dispatch";
+
+                renderSummaryOutput(headline, result.summary, result.word_count, category);
+
+                // Save to Archives
+                const now = new Date();
+                archiveData.unshift({
+                    id: Date.now(),
+                    headline: headline,
+                    summary: result.summary,
+                    wordCount: result.word_count,
+                    category: category,
+                    mode: activeInputMode,
+                    time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    date: now.toLocaleDateString([], { month: 'short', day: 'numeric' })
+                });
+                renderArchives();
+
+            } catch (err) {
+                console.error("Summarization error:", err);
+                const userMsg = err.message && err.message.includes("Failed to fetch")
+                    ? "Unable to connect to the backend server. Please verify that FastAPI is running at http://127.0.0.1:8000."
+                    : err.message || "An unexpected error occurred while communicating with the AI backend.";
+
+                showError(userMsg);
+                showOutputError(userMsg);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> GENERATE SUMMARY IN 60S`;
+            }
+        }
+
+        function renderSummaryOutput(headline, summaryText, wordCount, category) {
+            // Cancel any ongoing TTS when a new summary is rendered
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            const readAloudBtn = document.getElementById('btn-read-aloud');
+            readAloudBtn.innerHTML = `<i class="fa-solid fa-volume-high text-newspaper-accent"></i> Listen`;
+            readAloudBtn.onclick = readAloudSummary;
+
+            currentDisplayedSummary = summaryText;
+
+            // Update DOM states
+            document.getElementById('summary-empty-state').classList.add('hidden');
+            document.getElementById('summary-error-state').classList.add('hidden');
+            document.getElementById('summary-content-container').classList.remove('hidden');
+
+            // Metadata & Badges
+            document.getElementById('summary-headline').innerText = headline;
+            document.getElementById('summary-category-badge').innerText = category;
+            const wc = wordCount || summaryText.trim().split(/\s+/).length;
+            document.getElementById('summary-word-count').innerText = wc;
+            document.getElementById('summary-timestamp').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('reading-time-est').innerHTML = `<i class="fa-regular fa-clock mr-1"></i>~60 Seconds (${wc} Words)`;
+
+            // Body rendering with drop cap
+            const trimmed = summaryText.trim();
+            document.getElementById('summary-article-body').innerHTML = `
+                <p class="drop-cap">${trimmed}</p>
+            `;
+        }
+
+        function readAloudSummary() {
+            if (!('speechSynthesis' in window)) {
+                alert("Text-to-speech is not supported in this browser.");
+                return;
+            }
+
+            if (!currentDisplayedSummary) return;
+
+            window.speechSynthesis.cancel();
+            const headline = document.getElementById('summary-headline').innerText;
+            const utterance = new SpeechSynthesisUtterance(headline + ". " + currentDisplayedSummary);
+            utterance.rate = 1.0;
+
+            const btn = document.getElementById('btn-read-aloud');
+            btn.innerHTML = `<i class="fa-solid fa-stop text-red-600"></i> Stop`;
+            btn.onclick = () => {
+                window.speechSynthesis.cancel();
+                btn.innerHTML = `<i class="fa-solid fa-volume-high text-newspaper-accent"></i> Listen`;
+                btn.onclick = readAloudSummary;
+            };
+
+            utterance.onend = () => {
+                btn.innerHTML = `<i class="fa-solid fa-volume-high text-newspaper-accent"></i> Listen`;
+                btn.onclick = readAloudSummary;
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function copySummaryText() {
+            if (!currentDisplayedSummary) return;
+
+            const headline = document.getElementById('summary-headline').innerText;
+            const fullText = headline + "\n\n" + currentDisplayedSummary;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(fullText).then(showCopiedFeedback).catch(() => fallbackCopy(fullText));
+            } else {
+                fallbackCopy(fullText);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showCopiedFeedback();
+        }
+
+        function showCopiedFeedback() {
+            const btn = document.getElementById('btn-copy');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-check text-green-600"></i> Copied!`;
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+            }, 2000);
+        }
+
+        function toggleHistoryDrawer() {
+            const drawer = document.getElementById('history-drawer');
+            const backdrop = document.getElementById('history-drawer-backdrop');
+            const isOpen = !drawer.classList.contains('translate-x-full');
+            drawer.classList.toggle('translate-x-full');
+            backdrop.classList.toggle('hidden', isOpen);
+        }
+
+        function renderArchives() {
+            const list = document.getElementById('archive-list');
+            document.getElementById('archive-count').innerText = archiveData.length;
+            
+            if (archiveData.length === 0) {
+                list.innerHTML = `<div class="text-xs text-stone-400 text-center py-8">No saved summaries in archives.</div>`;
+                return;
+            }
+
+            const esc = (str) => String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+            list.innerHTML = archiveData.map(item => `
+                <div class="p-3 bg-stone-800 hover:bg-stone-700 rounded border-l-2 border-newspaper-accent cursor-pointer transition" onclick="loadArchivedItem(${item.id})">
+                    <span class="text-[10px] font-bold text-red-400 uppercase tracking-wider block">${esc(item.category)}</span>
+                    <h4 class="text-xs font-bold text-stone-100 line-clamp-2 mt-0.5">${esc(item.headline)}</h4>
+                    <p class="text-[11px] text-stone-300 line-clamp-2 mt-1">${esc(item.summary)}</p>
+                    <div class="flex justify-between items-center text-[10px] text-stone-400 mt-2">
+                        <span><i class="fa-solid fa-file-lines mr-0.5"></i>${esc(String(item.wordCount))} words (${esc(item.mode)})</span>
+                        <span>${esc(item.time)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadArchivedItem(id) {
+            const item = archiveData.find(a => a.id === id);
+            if (!item) return;
+
+            // Load saved item directly WITHOUT making any API call
+            renderSummaryOutput(item.headline, item.summary, item.wordCount, item.category);
+            document.getElementById('summary-timestamp').innerText = item.time;
+            toggleHistoryDrawer();
+        }
+    </script>
+</body>
+</html>
